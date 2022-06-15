@@ -157,7 +157,8 @@ std::map<size_t, Reconstruction> incremental_mapping(
         const py::object image_path_,
         const py::object output_path_,
         const int num_threads,
-        const int min_num_matches
+        const int min_num_matches,
+        const bool ba_refine_focal_length
 ) {
     std::string database_path = py::str(database_path_).cast<std::string>();
     THROW_CHECK_FILE_EXISTS(database_path);
@@ -170,6 +171,7 @@ std::map<size_t, Reconstruction> incremental_mapping(
     IncrementalMapperOptions options;
     options.num_threads = num_threads;
     options.min_num_matches = min_num_matches;
+    options.ba_refine_focal_length = ba_refine_focal_length;
     ReconstructionManager reconstruction_manager;
     IncrementalMapperController mapper(&options, image_path, database_path,
                                        &reconstruction_manager);
@@ -242,6 +244,7 @@ void init_pipeline(py::module& m) {
           py::arg("output_path"),
           py::arg("num_threads") = IncrementalMapperOptions().num_threads,
           py::arg("min_num_matches") = IncrementalMapperOptions().min_num_matches,
+          py::arg("ba_refine_focal_length") = IncrementalMapperOptions().ba_refine_focal_length,
           "Triangulate 3D points from known poses");
 
     m.def("infer_camera_from_image",
